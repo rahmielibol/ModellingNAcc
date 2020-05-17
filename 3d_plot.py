@@ -18,18 +18,10 @@ number_of_neurons_in_msnd1_shell=100
 xN_msnd1_core=5*rand(number_of_neurons_in_msnd1_core)
 yN_msnd1_core=14*rand(number_of_neurons_in_msnd1_core)
 zN_msnd1_core=7*rand(number_of_neurons_in_msnd1_core)
-#xN_msnd2_core=5*rand(number_of_neurons_in_msnd2_core)
-#yN_msnd2_core=10*rand(number_of_neurons_in_msnd2_core)
-#zN_msnd2_core=10*rand(number_of_neurons_in_msnd2_core)
+
 xN_msnd1_shell=5+5*rand(number_of_neurons_in_msnd1_shell)
 yN_msnd1_shell=14*rand(number_of_neurons_in_msnd1_shell)
 zN_msnd1_shell=7*rand(number_of_neurons_in_msnd1_shell)
-#xN_msnd2_shell=5+5*rand(number_of_neurons_in_msnd2_shell)
-#yN_msnd2_shell=10*rand(number_of_neurons_in_msnd2_shell)
-#zN_msnd2_shell=10*rand(number_of_neurons_in_msnd2_shell)
-#xN_nacc_in=10*rand(number_of_neurons_in_nacc_in)
-#yN_nacc_in=10*rand(number_of_neurons_in_nacc_in)
-#zN_nacc_in=10*rand(number_of_neurons_in_nacc_in)
 
 
 array_dim=1
@@ -58,36 +50,7 @@ print(yE)
 print(zE)
 
 
-#xE11=5*rand()
-#yE11=10*rand()
-#zE11=10*rand()
-#
-#
-#
-#
-#
-#
-#
-#xE21=5+5*rand()
-#yE21=10*rand()
-#zE21=10*rand()
-
-
-
-#zline = zN_msnd1_core
-#xline = xN_msnd1_core
-#yline = yN_msnd1_core
-#ax.plot3D(xline, yline, zline, 'gray')
-
-
-# Data for a three-dimensional line
-#zline = np.linspace(0, 15, 1000)
-#xline = np.sin(zline)
-#yline = np.cos(zline)
-#ax.plot3D(xline, yline, zline, 'gray')
-
 # Data for three-dimensional scattered points
-
 
 xline=[[xE[0],xE[0]]]
 yline=[[yE[0],yE[0]]]
@@ -147,5 +110,3 @@ figurre.set_size_inches(18, 10)
 plt.savefig('3dview.pdf',dpi=600)
 
 plt.show()
-
-
