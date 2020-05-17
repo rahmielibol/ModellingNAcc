@@ -1,7 +1,6 @@
 ﻿
-#Modelling_Nucleus_Accumbens
-
-
+#Modelling Nucleus Accumbens
+#A Computational Model from Single Cell to Circuit Level
 
 # There are cortex and NAcc groups. The cortex has pyramid and interneurons.
 # The NAcc has D1 , D2 type MSNs and interneurons.
