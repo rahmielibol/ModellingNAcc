@@ -1,6 +1,9 @@
 ﻿
-#Modelling Nucleus Accumbens
-#A Computational Model from Single Cell to Circuit Level
+# Modelling Nucleus Accumbens
+# A Computational Model from Single Cell to Circuit Level
+# Created by Rahmi Elibol May, 2020.
+
+#With this code Nucleus Accumbens is modelled; single neurons, synaptic currents and the over all behavior of medium spiny neurons under the effect of dopamine can be observed. The results are given with membrane potentials, synaptic currents, raster plots, frequency analysis  (power spectrum density, frequency time plot) and local field potential.Single neurons are modelled using Izhikevich neuron model and modified Izhikevich neuro model.
 
 # There are cortex and NAcc groups. The cortex has pyramid and interneurons.
 # The NAcc has D1 , D2 type MSNs and interneurons.
@@ -18,24 +21,26 @@ start_scope()
 
 # Parameters
 #neuron parameters
-Vthr = 30 * mvolt
-EL = -75 * mV
+Vthr = 30 * mvolt       # threshold value for Izhikevich neuron
+EL = -75 * mV           # initial value of membrane potentials
 
 
 
 
 #synaptic parameters
-tau_s = 1 * ms
-we = 0.1 *amp/mV
-wi = 0.1 *amp/mV
-Vi = -90 * mV
-Ve = 0 * mV
-dly=(3+rand())*ms
+tau_s = 1 * ms          # time constant for synatic dynamics
+we = 0.1 *amp/mV        # weights for excitatory synapses
+wi = 0.1 *amp/mV        # weights for inhibitory synapses
+Vi = -90 * mV           # resting potential for inhibitory synaptic currents.
+Ve = 0 * mV             # resting potential for excitatory synaptic currents.
+dly=(3+rand())*ms       # axonal and synaptic delay 
 
 
-par_percent=10
+par_percent=10          # The parameters a, b, c, d, and k are taken at random around 10% of the given values
 
 
+
+# From the article: E. M. Izhikevich, "Simple model of spiking neurons," in IEEE Transactions on Neural Networks, vol. 14, no. 6, pp. 1569-1572, Nov. 2003, doi: 10.1109/TNN.2003.820440.
 #Regular Spike (RS) parameters
 #a = 0.02 / ms
 #b = 0.2 / ms  
@@ -48,8 +53,6 @@ par_percent=10
 #c = -65 * mvolt        
 #d = 2 * mvolt 
 
-
-
 #Chattering (CH) parameters
 #a = 0.02 / ms
 #b = 0.2 / ms  
@@ -57,29 +60,28 @@ par_percent=10
 #d = 2 * mvolt 
 
 
-
-
-#number_of_neurons_in_cortex=900
+#As circuit level model of nucleus accumbens is built, modelling its relation with cortex globus pallidus stn and thalamus, i.e. part of basal ganglia loop neuron groups are formed. Here are the numbers of neurons considered for each neural structure.
+# cortex with excitatory and inhibitory neuron populations.
 number_of_neurons_in_pyramid = 900
 number_of_neurons_in_crtx_in = 100
-
+# nucleus accumbens core and shell  with D1 and D2 type dopamine effect  on medium spiny neurons and inhibitory neurons.
 number_of_neurons_in_nacc=450
 number_of_neurons_in_msnd1_core = 100
 number_of_neurons_in_msnd2_core = 100
 number_of_neurons_in_msnd1_shell = 100
 number_of_neurons_in_msnd2_shell = 100
 number_of_neurons_in_nacc_in = 50
-
+# Globus pallidus, STN and total of  them
 number_of_neurons_in_bg=300
 number_of_neurons_in_GPe=100
-
+# thalamus and ventral tegmental area
 number_of_neurons_in_thl = 100
 number_of_neurons_in_vta = 100
 
 
 
 print('Equations')
-
+# Other than nucleus accumbens , other structures have excitatory stimuli modelled with poisson group these correspond to background activity
 
 PG_pyramid = PoissonGroup(number_of_neurons_in_pyramid, 5 * Hz)  #nominal value: 5*Hz
 
@@ -89,9 +91,9 @@ PG_BG = PoissonGroup(number_of_neurons_in_bg, 1 * Hz)
 
 
 PG_crtx_in = PoissonGroup(number_of_neurons_in_crtx_in, 50 * Hz)    #nominal value: 50*Hz
-PG_str_in = PoissonGroup(number_of_neurons_in_nacc_in, 50 * Hz)
 
 
+# Izhikevich neuron model for cortex, golubs pallidus, STN, VTA and THL with synaptic dynamics defining synaptic current.
 
 eqs_dyn = """
 dv/dt=(0.04/ms/mV)*v**2+(5/ms)*v+140*mV/ms-u/ms+I*mV/(amp*ms)+Is*mV/(amp*ms) : volt
@@ -108,6 +110,9 @@ tau_e : second
 tau_i : second
 """
 
+
+
+# Modified Izhikevich neuron model for nucleus accumbens core and shell with synaptic dynamics, defining synaptic current. This synaptic current has glutamate, GABA, Dopamine and acetylcholine components.
 
 tau_glu=2*ms
 tau_DA=1.5*ms
@@ -135,13 +140,14 @@ V_DA : volt
 """
 
 
-
-
+# reset condition for Izhikevich neuron.
 eqs_reset = '''
 v = c
 u = u+d
 '''
 
+
+# Forming neuron population for each neural structure considered. “NeuronGroup” of BRIAN2 is used. Here, the parameters in the neuron model are taken randomly in a range that does not alter the behavior of the specific neuron type. This randomness is important to obtain a realistic behavior of population. Otherwise all neurons would fire exactly same which would not give rise to a realistic model.
 
 
 pyramid = NeuronGroup(number_of_neurons_in_pyramid, model=eqs_dyn, method='rk4', threshold='v>Vthr', reset=eqs_reset)
@@ -325,9 +331,6 @@ vta_dopamine.tau_i = tau_s
 
 
 
-##      0.03      0.25    -60     4        0;...      % rebound spike
-##      0.03      0.25    -52     0        0;...      % rebound burst
-## THL icin rebaund burst alindi.
 
 thl = NeuronGroup(number_of_neurons_in_thl, model=eqs_dyn, method='rk4', threshold='v>Vthr', reset=eqs_reset)
 
@@ -341,15 +344,6 @@ for i in range(number_of_neurons_in_thl):
     thl.d[i] = 0.01*((100-par_percent+2*par_percent*rand())/100) * mvolt 
     thl.v[i] = EL*((100-par_percent+2*par_percent*rand())/100)
     thl.u[i] = -14.5*((100-par_percent+2*par_percent*rand())/100) *mV
-
-#regular spike
-#for i in range(number_of_neurons_in_thl):
-#    thl.a[i]=(0.019*(1+0.1*rand()))
-#    thl.b[i]=(0.19*(1+0.1*rand()))
-#    thl.c[i]=(-70*(1+0.1*rand())) * mvolt        
-#    thl.d[i]=(7.2*(1+0.1*rand())) * mvolt
-#    thl.v[i] = EL+1*rand()*mV
-#    thl.u[i] = -14.5 *mV+.2*rand()*mV
 thl.tau_e = tau_s
 thl.tau_i = tau_s*5
 
@@ -358,7 +352,7 @@ thl.tau_i = tau_s*5
         
 
     
-
+# Here, stimuli that activate the population is defined. But all these are choosen to be zero for the model.
 
 pyramid.I = 0*amp
 crtx_in.I = 0*amp
@@ -384,6 +378,8 @@ thl.I = 0*amp
 ###### Synapses #############
 #############################
 print('Synapses')
+# The synaptic connection between and within neural structures are defined with “synapse”  of BRIAN2 is used.Each structure is coded with a number for example code of cortex is 1, pyramidal neuron population in cortex is coded with 11 and connection between pyramidal neurons and cortex IN is coded with 1112.
+
 
 
 # 1  cortex
@@ -706,7 +702,7 @@ SP5151.w=we
 import time
 init_time=time.time()
 
-
+# Simulation will begin now after defining everything needed to for neurons and the neural structures. But first 100ms of the simulation is just for settling all neurons to equilibrium. So this part will not be used in analysis.
 ######### First 100ms #########
 ################################
 duration1=100*ms
@@ -725,7 +721,7 @@ SP5151.w=we
 ###### Monitors ###########
 ###########################
 print('Monitors')
-
+# “StateMonitor” and "SpikeMonitor" commands of BRIAN are used to follow the behavior of  neurons during simulation.
 
 
 
@@ -849,6 +845,7 @@ number_of_scenario=1
 
 ##-------------------- Scenario 0 --------------------------------##
 ## It is used for testing purposes.
+# The scenario is used to test whether the code works.
 
 if number_of_scenario==0:
 
@@ -1048,6 +1045,7 @@ print("THL : "+str(spikes_thl.num_spikes)+"  ---->  : " +str(spikes_thl.num_spik
 ############# --- Figures --- #########
 #########################################
 
+#To see the results single neuron behavior figures are obtained.
 figure()
 subplot(411)
 plot(trace_pyramid.t / ms, trace_pyramid[9].v / mV)
@@ -1099,11 +1097,31 @@ ylabel('MSND2 Shell')
 
 
 
+figure()
+subplot(411)
+plot(trace_GPe.t / ms, trace_GPe[9].v / mV)
+ylabel('GPe')
+
+subplot(412)
+plot(trace_GPi.t / ms, trace_GPi[9].v / mV)
+ylabel('GPi')
+
+subplot(413)
+plot(trace_STN.t / ms, trace_STN[9].v / mV)
+ylabel('STN')
+
+subplot(414)
+plot(trace_str_in.t / ms, trace_str_in[9].v / mV)
+xlabel('time (ms)')
+ylabel('NAcc IN')
+
+
+
 
 
 figure()
 
-
+# To see the synaptic currents.
 
 subplot(511)
 plot(trace_I_Glu_msnd1_core.t / ms,trace_I_Glu_msnd1_core[9].I_Glu, label='monitorden')
@@ -1192,27 +1210,10 @@ plot(trace_I_Ach_msnd2_core.t / ms,trace_I_Ach_msnd2_core[9].I_Ach, label='Ach')
 
 
 
-figure()
-subplot(411)
-plot(trace_GPe.t / ms, trace_GPe[9].v / mV)
-ylabel('GPe')
-
-subplot(412)
-plot(trace_GPi.t / ms, trace_GPi[9].v / mV)
-ylabel('GPi')
-
-subplot(413)
-plot(trace_STN.t / ms, trace_STN[9].v / mV)
-ylabel('STN')
-
-subplot(414)
-plot(trace_str_in.t / ms, trace_str_in[9].v / mV)
-xlabel('time (ms)')
-ylabel('NAcc IN')
 
 
 #==============================================================================
-
+# Figures for raster plots.
 
 figure()
 subplot(411)
@@ -1325,64 +1326,10 @@ xlabel('Time (ms)')
 ylabel('THL');
 
 
-figure()
-
-subplot(511)
-hist_cortex = hist(spikes_pyramid.t/ms, 100)#, histtype='stepfilled', facecolor='k', weights=ones(len(spikes_str_in))/(number_of_neurons_in_str_in*defaultclock.dt))
-ylabel('Cortex fr (sp/s)');
-
-subplot(512)
-hist_vta_dopamine = hist(spikes_vta_dopamine.t/ms, 100)#, histtype='stepfilled', facecolor='k', weights=ones(len(spikes_str_in))/(number_of_neurons_in_str_in*defaultclock.dt))
-ylabel('vta fr (sp/s)');
-
-subplot(513)
-
-hist_msnd1_core = hist(spikes_msnd1_core.t/ms, 100)#, histtype='stepfilled', facecolor='k', weights=ones(len(spikes_str_in))/(number_of_neurons_in_str_in*defaultclock.dt))
-hist_msnd1_shell = hist(spikes_msnd1_shell.t/ms, 100)#, histtype='stepfilled', facecolor='k', weights=ones(len(spikes_str_in))/(number_of_neurons_in_str_in*defaultclock.dt))
-ylabel('msnd1');
-#
-subplot(514)
-hist_msnd2_core = hist(spikes_msnd2_core.t/ms, 100)#, histtype='stepfilled', facecolor='k', weights=ones(len(spikes_str_in))/(number_of_neurons_in_str_in*defaultclock.dt))
-hist_msnd2_shell = hist(spikes_msnd2_shell.t/ms, 100)#, histtype='stepfilled', facecolor='k', weights=ones(len(spikes_str_in))/(number_of_neurons_in_str_in*defaultclock.dt))
-ylabel('msnd2');
-
-
-subplot(515)
-hist_thl = hist(spikes_thl.t/ms, 100)#, histtype='stepfilled', facecolor='k', weights=ones(len(spikes_str_in))/(number_of_neurons_in_str_in*defaultclock.dt))
-ylabel('thl fr (sp/s)');
-
-show()
-
-
-#==============================================================================
-#========     Firing Rate data ====================================================
-#==============================================================================
-
-
-fr_cortex=hist_cortex[0]
-
-
-fr_msnd1c=hist_msnd1_core[0]
-fr_msnd2c=hist_msnd2_core[0]
-fr_msnd1s=hist_msnd1_shell[0]
-fr_msnd2s=hist_msnd2_shell[0]
-
-
-fr_vta_dopamine=hist_vta_dopamine[0]
-
-fr_thl=hist_thl[0]
-#==============================================================================
-# fr_nacc_in=hist_str_in[0]
-#==============================================================================
-
-
-fr_nacc=fr_msnd1c+fr_msnd2c+fr_msnd1s+fr_msnd2s
-fr_D1=fr_msnd1c+fr_msnd1s
-fr_D2=fr_msnd2c+fr_msnd2s
-
 #==============================================================================
 #========     File Writing ====================================================
 #==============================================================================
+# In order to give high quality figures all the results are written to a file.
 
 filename=str(time.time())
 
@@ -1490,83 +1437,6 @@ with open(filename_rasterplot_msnd2s,"w") as results_rasterplot__msnd2s:
 ##############################################################################
 
 
-from scipy.signal import square, sawtooth, correlate
-from numpy import pi, random
-import numpy
-import matplotlib.pyplot as pilot
-
-
-C=fr_cortex/fr_cortex[fr_cortex.argmax()]
-                  
-                  
-V=fr_vta_dopamine/fr_vta_dopamine[fr_vta_dopamine.argmax()]
-                  
-T=fr_thl/fr_thl[fr_thl.argmax()]
-                                  
-                                  
-N=fr_nacc/fr_nacc[fr_nacc.argmax()]
-
-print("arg max kullanimi")
-print(fr_cortex[fr_cortex.argmax()])
-
-
-
-
-
-
-
-# calculate cross correlation of the two signals
-xcorrCN = correlate(C, N)
-xcorrVN = correlate(V, N)
-xcorrTN = correlate(T, N)
-
-
-recovered_phase_shift = 1-(abs(xcorrCN.argmax()-len(C)))/len(C)  
-
-print ("Recovered phase shift: %.2f " % (recovered_phase_shift))
-
-
-
-x1 = numpy.arange(0, len(C), 1)
-x2 = numpy.arange(0, len(xcorrCN), 1)
-
-pilot.Figure()
-pilot.subplot(411)
-pilot.step(x1,C)
-pilot.ylabel('Korteks')
-pilot.subplot(412)
-pilot.step(x1,V)
-pilot.ylabel('VTA')
-pilot.subplot(413)
-pilot.step(x1,T)
-pilot.ylabel('Talamus')
-pilot.subplot(414)
-pilot.step(x1,N)
-pilot.ylabel('NAc')
-pilot.show()
-
-
-pilot.Figure()
-pilot.subplot(311)
-pilot.step(x2,xcorrCN)
-pilot.ylabel('Kortex & NAc')
-pilot.subplot(312)
-pilot.step(x2,xcorrVN)
-pilot.ylabel('VTA & NAc')
-pilot.subplot(313)
-pilot.step(x2,xcorrTN)
-pilot.ylabel('THL & NAc')
-pilot.show()
-
-pilot.Figure()
-pilot.step(x1,fr_D1)
-pilot.step(x1,fr_D2)
-pilot.ylabel('D1 and D2 fr')
-pilot.savefig('example2.pdf', dpi=300)
-pilot.show()
-#==============================================================================
-
-
 
 
 
@@ -1574,6 +1444,9 @@ pilot.show()
 #########################################
 #############---------LFP-------#########
 #########################################
+#  LFP values are obtained calculating the distance of each neuron to electrodes and the total synaptic current for each neuron.
+
+# The coordinates of neurons
 xN_msnd1_core=5*rand(number_of_neurons_in_msnd1_core)
 yN_msnd1_core=10*rand(number_of_neurons_in_msnd1_core)
 zN_msnd1_core=10*rand(number_of_neurons_in_msnd1_core)
@@ -1593,6 +1466,7 @@ zN_nacc_in=10*rand(number_of_neurons_in_nacc_in)
 
 array_dim=.1
 
+# The coordinates of electrodes
 xE11=5*rand()
 yE11=10*rand()
 zE11=10*rand()
@@ -1600,8 +1474,6 @@ zE11=10*rand()
 xE21=5+5*rand()
 yE21=10*rand()
 zE21=10*rand()
-
-
 
 
 
@@ -1661,10 +1533,10 @@ ylabel('MSND1 Core')
 subplot(212)
 plot(trace_I_s_msnd1_core.t / ms, LFP_Is_vE1 /volt)
 plot(trace_I_s_msnd1_core.t / ms, LFP_Is_vE2 /volt)
-ylabel('LFP_Is_vE1')
+ylabel('LFPs')
 xlabel('time (ms)')
 tight_layout()
-savefig('LFP_Is_vE1.pdf', dpi=600)
+savefig('LFPs', dpi=600)
 
 
 
@@ -1679,4 +1551,7 @@ show()
 
 #########################################
 #########--- LFP Graphs-- (end) --#######
+#########################################
+#########################################
+############ --- The End --- ##########
 #########################################
