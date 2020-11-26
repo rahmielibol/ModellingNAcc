@@ -836,7 +836,7 @@ SP1111.w=we*2
 SP5151.w=we
 
 
-number_of_scenario=1
+number_of_scenario=0
 
 
 
@@ -1125,26 +1125,26 @@ figure()
 
 subplot(511)
 plot(trace_I_Glu_msnd1_core.t / ms,trace_I_Glu_msnd1_core[9].I_Glu, label='monitorden')
-ylabel('gGlu')
+ylabel('gGlu1')
 
 
 
 subplot(512)
 plot(trace_I_DA_msnd1_core.t / ms,trace_I_DA_msnd1_core[9].I_DA, label='monitorden')
-ylabel('gDA')
+ylabel('gDA1')
 
 
 
 
 subplot(513)
 plot(trace_I_GABA_msnd1_core.t / ms,trace_I_GABA_msnd1_core[9].I_GABA, label='monitorden')
-ylabel('gGABA')
+ylabel('gGABA1')
 
 
 
 subplot(514)
 plot(trace_I_Ach_msnd1_core.t / ms,trace_I_Ach_msnd1_core[9].I_Ach, label='monitorden')
-ylabel('gAch')
+ylabel('gAch1')
 
 
 
@@ -1152,7 +1152,7 @@ subplot(515)
 plot(trace_I_s_msnd1_core.t / ms, trace_I_s_msnd1_core[9].Is)
 hlines(0,100,300)
 xlabel('time, ms')
-ylabel('Is')
+ylabel('Is1')
 
 
 figure()
@@ -1162,6 +1162,8 @@ plot(trace_I_Glu_msnd1_core.t / ms,trace_I_Glu_msnd1_core[9].I_Glu, label='Glu')
 plot(trace_I_DA_msnd1_core.t / ms,trace_I_DA_msnd1_core[9].I_DA,label='DA')
 plot(trace_I_GABA_msnd1_core.t / ms,trace_I_GABA_msnd1_core[9].I_GABA, label='GABA')
 plot(trace_I_Ach_msnd1_core.t / ms,trace_I_Ach_msnd1_core[9].I_Ach,label='Ach')
+xlabel('time, ms')
+ylabel('Is1 and synaptic dynamics')
 
 
 
@@ -1207,83 +1209,14 @@ plot(trace_I_Glu_msnd2_core.t / ms,trace_I_Glu_msnd2_core[9].I_Glu,label='Glu')
 plot(trace_I_DA_msnd2_core.t / ms,trace_I_DA_msnd2_core[9].I_DA, label='DA')
 plot(trace_I_GABA_msnd2_core.t / ms,trace_I_GABA_msnd2_core[9].I_GABA, label='GABA')
 plot(trace_I_Ach_msnd2_core.t / ms,trace_I_Ach_msnd2_core[9].I_Ach, label='Ach')
-
+xlabel('time, ms')
+ylabel('Is2 and synaptic dynamics')
 
 
 
 
 #==============================================================================
 # Figures for raster plots.
-
-figure()
-subplot(411)
-plot(spikes_pyramid.t/ms, spikes_pyramid.i, '.k')
-
-ylabel('Pyramid');
-
-subplot(412)
-plot(spikes_crtx_in.t/ms, spikes_crtx_in.i, '.k')
-
-ylabel('Crtx IN');
-
-
-subplot(413)
-plot(spikes_vta_dopamine.t/ms, spikes_vta_dopamine.i, '.k')
-ylabel('VTA');
-
-
-subplot(414)
-plot(spikes_thl.t/ms, spikes_thl.i, '.k')
-xlabel('Time (ms)')
-ylabel('THL');
-
-
-
-figure()
-
-subplot(511)
-plot(spikes_msnd1_core.t/ms, spikes_msnd1_core.i, '.k')
-ylabel('MSND1 Core');
-
-subplot(512)
-plot(spikes_msnd2_core.t/ms, spikes_msnd2_core.i, '.k')
-ylabel('MSND2 Core');
-
-
-subplot(513)
-plot(spikes_msnd1_shell.t/ms, spikes_msnd1_shell.i, '.k')
-ylabel('MSND1 Shell');
-
-subplot(514)
-plot(spikes_msnd2_shell.t/ms, spikes_msnd2_shell.i, '.k')
-ylabel('MSND2 Shell');
-
-
-subplot(515)
-plot(spikes_str_in.t/ms, spikes_str_in.i, '.k')
-xlabel('time, ms')
-ylabel('NAcc IN');
-
-
-
-figure()
-subplot(311)
-plot(spikes_GPe.t/ms, spikes_GPe.i, '.k')
-ylabel('GPe');
-
-subplot(312)
-plot(spikes_GPi.t/ms, spikes_GPi.i, '.k')
-ylabel('GPi');
-
-
-subplot(313)
-plot(spikes_STN.t/ms, spikes_STN.i, '.k')
-ylabel('STN');
-
-
-################################################################
-################################################################
-#
 
 figure()
 subplot(421)
@@ -1351,18 +1284,6 @@ with open(filename_fundamentals_informations,"w") as results_filename_fundamenta
     results_filename_fundamentals_informations.write("THL : "+str(spikes_thl.num_spikes)+"  ---->  : " +str(spikes_thl.num_spikes/number_of_neurons_in_thl)+"\n")
 
 
-
-
-filename_crtx="011_crtx_"+filename+".dat"
-with open(filename_crtx,"w") as results_crtx:
-    for i in range(len(fr_cortex)):
- 		 	results_crtx.write(str(fr_cortex[i])+"\n")
-
-
-filename_str="012_str_"+filename+".dat"
-with open(filename_str,"w") as results_str:
-    for i in range(len(fr_nacc)):
- 		 	results_str.write(str(fr_nacc[i])+"\n")
      
      
 
