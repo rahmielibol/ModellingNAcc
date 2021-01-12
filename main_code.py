@@ -1461,11 +1461,6 @@ savefig('LFPs', dpi=600)
 
 
 
-filename_LFP_Is="LFP_Is_"+filename+".dat"
-with open(filename_LFP_Is,"w") as results_LFP_Is:
-    for i in range(len(LFP_Is_vE1)):
- 		 	results_LFP_Is.write(str(LFP_Is_vE1[i]/amp)+","+str(LFP_Is_vE2[i]/amp)+"\n")
-
 show()
 
 
